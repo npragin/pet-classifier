@@ -14,8 +14,13 @@
         </form>
         
         <div id="preview-container" style="display: none;">
-            <img id="image-preview" src="#" alt="Preview">
-            <button id="submit-button" class="btn">Classify Pet</button>
+            <div class="image-preview-wrapper">
+                <img id="image-preview" src="#" alt="Preview">
+            </div>
+            <div class="button-container">
+                <button type="button" id="browse-again-button" class="btn btn-secondary">Browse Files</button>
+                <button id="submit-button" class="btn">Classify Pet</button>
+            </div>
         </div>
     </div>
 </div>
@@ -31,84 +36,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const dropArea = document.querySelector('.upload-area');
-        const fileInput = document.getElementById('file-input');
-        const browseButton = document.getElementById('browse-button');
-        const previewContainer = document.getElementById('preview-container');
-        const imagePreview = document.getElementById('image-preview');
-        const submitButton = document.getElementById('submit-button');
-        const uploadForm = document.getElementById('upload-form');
-
-        // Browse button functionality
-        browseButton.addEventListener('click', function() {
-            fileInput.click();
-        });
-
-        // File input change event
-        fileInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                displayPreview(file);
-            }
-        });
-
-        // Drag and drop functionality
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false);
-        });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight() {
-            dropArea.classList.add('highlight');
-        }
-
-        function unhighlight() {
-            dropArea.classList.remove('highlight');
-        }
-
-        // Handle dropped files
-        dropArea.addEventListener('drop', function(e) {
-            const file = e.dataTransfer.files[0];
-            fileInput.files = e.dataTransfer.files;
-            if (file) {
-                displayPreview(file);
-            }
-        });
-
-        // Display preview of selected image
-        function displayPreview(file) {
-            if (!file.type.match('image.*')) {
-                alert('Please select an image file');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.setAttribute('src', e.target.result);
-                previewContainer.style.display = 'block';
-                browseButton.style.display = 'none';
-            }
-            reader.readAsDataURL(file);
-        }
-
-        // Submit button functionality
-        submitButton.addEventListener('click', function() {
-            uploadForm.submit();
-        });
-    });
-</script>
+{{ super() }}
 {% endblock %}
