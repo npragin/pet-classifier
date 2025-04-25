@@ -1,5 +1,2 @@
 __pycache__/
-outputs/
 wandb/
-data/
-datasets/
