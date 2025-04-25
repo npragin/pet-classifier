@@ -1,5 +1,5 @@
 /*
- * Pet Classification App - Main JavaScript
+ * Pet Breed Classifier - Main JavaScript
  * Handles image upload, preview, and submission functionality
  */
 
