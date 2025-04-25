@@ -13,7 +13,7 @@ import wandb
 from tqdm import tqdm
 
 # Import our own files
-from data.oxford_pets import getOxfordPetsDataloaders
+from datasets.oxford_pets import getOxfordPetsDataloaders
 from models.convnext import ConvNext
 
 use_cuda_if_avail = True
