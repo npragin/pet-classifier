@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Pet Classification App{% endblock %}</title>
+    <title>{% block title %}Pet Breed Classifier{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     {% block extra_head %}{% endblock %}
@@ -11,7 +11,7 @@
 <body>
     <header>
         <div class="container">
-            <h1 class="logo">Pet Classification App</h1>
+            <h1 class="logo">Pet Breed Classifier</h1>
             <nav>
                 <ul class="navigation">
                     <li><a href="{{ url_for('home') }}" class="{% if request.path == url_for('home') %}active{% endif %}">Home</a></li>
@@ -30,7 +30,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Pet Classification App by Noah Pragin</p>
+            <p>&copy; 2025 Pet Breed Classifier by Noah Pragin</p>
         </div>
     </footer>
 
