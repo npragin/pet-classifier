@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Pet Classification App - History{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Classification History</h2>
+    <p>Your previous classification results will appear here.</p>
+    
+    <div class="history-empty">
+        <p>No classification history yet. Upload an image on the home page to get started.</p>
+    </div>
+    
+    <!-- This section would be populated with actual history entries -->
+    <div class="history-list" style="display: none;">
+        <!-- Example history entry -->
+        <div class="history-item">
+            <div class="history-image">
+                <img src="#" alt="Pet">
+            </div>
+            <div class="history-details">
+                <h3>Classification Result</h3>
+                <p>Date: <span class="date">April 25, 2025</span></p>
+                <p>Prediction: <span class="prediction">Maine Coon</span></p>
+                <p>Confidence: <span class="confidence">95%</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

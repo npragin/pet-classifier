@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Pet Classification App - Data Profile/Bias Assessment{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Data Profile</h2>
+    <p>Information about the training data used in our pet classification model.</p>
+    
+    <div class="data-stats">
+        <h3>Dataset Statistics</h3>
+        <ul>
+            <li>Total number of images: 10,000+</li>
+            <li>Number of cat breeds: 42</li>
+            <li>Number of big cat species: 15</li>
+            <li>Image resolution range: 224x224 to 1024x1024 pixels</li>
+            <li>Dataset collection period: 2020-2024</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Bias Assessment</h2>
+    <p>Analysis of potential biases in our classification model.</p>
+    
+    <div class="bias-assessment">
+        <h3>Known Biases</h3>
+        <ul>
+            <li>Higher accuracy for commonly photographed breeds</li>
+            <li>May perform better on professional photos than casual snapshots</li>
+            <li>Limited performance on mixed-breed cats</li>
+            <li>Potential confusion between visually similar breeds</li>
+        </ul>
+        
+        <h3>Mitigation Strategies</h3>
+        <p>We continuously work to improve our model by:</p>
+        <ul>
+            <li>Expanding our dataset with diverse images</li>
+            <li>Implementing data augmentation techniques</li>
+            <li>Regular model evaluations across breed categories</li>
+            <li>Collecting user feedback to identify misclassifications</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
