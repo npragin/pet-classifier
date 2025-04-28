@@ -2,9 +2,10 @@ import zmq
 import base64
 import atexit
 
+from config import ZMQ_PORT_FRONTEND_INGESTOR
 
-# Port to receive images from the web server
-port = 98703
+
+port = ZMQ_PORT_FRONTEND_INGESTOR
 
 
 def cleanup_zmq(zmq_context, zmq_socket):
