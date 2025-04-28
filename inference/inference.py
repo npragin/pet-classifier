@@ -48,10 +48,6 @@ def main():
             serialized_tensor = zmq_ingestor_socket.recv()
             tensor = pickle.loads(serialized_tensor)
             
-            # Add batch dimension if needed
-            if tensor.dim() == 3:
-                tensor = tensor.unsqueeze(0) # TODO: Needed?
-            
             # Process the tensor through the model
             output = model.predict(tensor)
             
