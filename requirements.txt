@@ -1,0 +1,7 @@
+Flask
+pyzmq
+torch
+torchvision
+numpy
+tensorrt
+tensorflow
