@@ -1,21 +1,95 @@
 from onnx_helper import ONNXClassifierWrapper
-import time
-import torch
 import numpy as np
+import zmq
+import pickle
+import atexit
+
+from config import ZMQ_PORT_MODEL_INGESTOR
+
+
+def cleanup_zmq(zmq_context, zmq_ingestor_socket):
+    print("Cleaning up resources...")
+    if zmq_ingestor_socket:
+        zmq_ingestor_socket.close()
+    if zmq_context:
+        zmq_context.term()
+    print("Cleanup complete. Exiting.")
+
+def setup_zmq():
+    # Set up the ZeroMQ context
+    zmq_context = zmq.Context()
+    
+    # Set up the ingestor socket
+    zmq_ingestor_socket = zmq_context.socket(zmq.PULL)
+    zmq_ingestor_socket.bind(f"tcp://*:{ZMQ_PORT_MODEL_INGESTOR}")
+    
+    # Register the cleanup function with atexit
+    atexit.register(cleanup_zmq, zmq_context, zmq_ingestor_socket)
+    
+    return zmq_ingestor_socket
+
+def softmax(x):
+    # Subtract the maximum value for numerical stability
+    x_max = np.max(x, axis=1, keepdims=True)
+    exp_x = np.exp(x - x_max)
+    return exp_x / np.sum(exp_x, axis=1, keepdims=True)
 
 def main():
+    # Load the model
     model = ONNXClassifierWrapper("breed_classifier.trt", num_classes=37, target_dtype=np.float16)
-
-    while input("Enter 'q' to quit, anything else to continue: ") != 'q':
-        dummy_input_batch = torch.rand(1, 3, 224, 224)
-        t = time.time()
-        out = model.predict(dummy_input_batch)
-        t = time.time() - t
-        print(np.argmax(out))
-        print(f"Time taken: {t} seconds")
-
-
-
+    
+    # Set up ZMQ socket
+    zmq_ingestor_socket = setup_zmq()
+    
+    print(f"Model service listening on port {ZMQ_PORT_MODEL_INGESTOR}. Press Ctrl+C to exit.")
+    
+    while True:
+        try:
+            # Receive the serialized tensor
+            serialized_tensor = zmq_ingestor_socket.recv()
+            tensor = pickle.loads(serialized_tensor)
+            
+            # Add batch dimension if needed
+            if tensor.dim() == 3:
+                tensor = tensor.unsqueeze(0) # TODO: Needed?
+            
+            # Process the tensor through the model
+            output = model.predict(tensor)
+            
+            # Get the predicted class and confidence
+            predicted_class = np.argmax(output)
+            confidence = softmax(output)[0][predicted_class]
+            print(confidence)
+            print(softmax(output).max())
+            print(softmax(output).shape)
+            
+            # Create a response dictionary
+            response = {
+                "class": int(predicted_class),
+                "confidence": confidence,
+            }
+            
+            # Serialize and send the response back to the data ingestor
+            serialized_response = pickle.dumps(response)
+            zmq_ingestor_socket.send(serialized_response)
+            
+            print(f"Processed image. Class: {predicted_class}, Confidence: {confidence:.4f}")
+            
+        except KeyboardInterrupt:
+            print("\nReceived KeyboardInterrupt, shutting down gracefully...")
+            break
+            
+        except Exception as e:
+            print(f"Error: {e}")
+            # Send an error response
+            error_response = {
+                "error": str(e)
+            }
+            try:
+                zmq_ingestor_socket.send(pickle.dumps(error_response))
+            except:
+                pass
+            break
 
 if __name__ == "__main__":
     main()
