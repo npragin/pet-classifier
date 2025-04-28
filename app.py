@@ -13,9 +13,7 @@ def create_app():
     app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg"}
 
     # Only initialize ZeroMQ in the main process, not in the reloader
-    if not os.environ.get("WERKZEUG_RUN_MAIN"):
-        print("Skipping ZeroMQ initialization in reloader process")
-    else:
+    if os.environ.get("WERKZEUG_RUN_MAIN"):
         zmq_socket = setup_zmq()
 
     @app.route("/")
