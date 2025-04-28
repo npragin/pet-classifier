@@ -40,6 +40,10 @@ def main():
 
             print("Image received and saved as 'received_image.png'")
 
+        except KeyboardInterrupt:
+            print("\nReceived KeyboardInterrupt, shutting down gracefully...")
+            break
+
         except Exception as e:
             print(f"Error: {e}")
             break
