@@ -7,7 +7,7 @@ import atexit
 port = 98703
 
 
-def cleanup_resources(zmq_context, zmq_socket):
+def cleanup_zmq(zmq_context, zmq_socket):
     print("Cleaning up resources...")
     if zmq_socket:
         zmq_socket.close()
@@ -16,7 +16,7 @@ def cleanup_resources(zmq_context, zmq_socket):
     print("Cleanup complete. Exiting.")
 
 
-def main():
+def setup_zmq():
     # Set up the ZeroMQ context and socket
     zmq_context = zmq.Context()
     zmq_socket = zmq_context.socket(zmq.SUB)
@@ -24,7 +24,13 @@ def main():
     zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
     # Register the cleanup function with atexit
-    atexit.register(cleanup_resources, zmq_context, zmq_socket)
+    atexit.register(cleanup_zmq, zmq_context, zmq_socket)
+
+    return zmq_socket
+
+
+def main():
+    zmq_socket = setup_zmq()
 
     print("Listening for images. Press Ctrl+C to exit.")
 
