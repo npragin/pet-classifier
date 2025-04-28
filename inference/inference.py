@@ -1,5 +1,4 @@
 from onnx_helper import ONNXClassifierWrapper
-import tensorrt as trt
 import time
 import torch
 import numpy as np
