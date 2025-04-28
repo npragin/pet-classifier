@@ -6,7 +6,7 @@ from PIL import Image
 import io
 import pickle
 
-from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_PORT_MODEL_INGESTOR
+from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_PORT_MODEL_INGESTOR, ZMQ_HOSTNAME_FRONTEND, ZMQ_HOSTNAME_MODEL
 
 
 def cleanup_zmq(zmq_context, zmq_frontend_socket, zmq_model_socket):
@@ -26,12 +26,12 @@ def setup_zmq():
 
     # Set up the frontend socket
     zmq_frontend_socket = zmq_context.socket(zmq.SUB)
-    zmq_frontend_socket.connect(f"tcp://localhost:{ZMQ_PORT_FRONTEND_INGESTOR}")
+    zmq_frontend_socket.connect(f"tcp://{ZMQ_HOSTNAME_FRONTEND}:{ZMQ_PORT_FRONTEND_INGESTOR}")
     zmq_frontend_socket.setsockopt_string(zmq.SUBSCRIBE, "")
     
     # Set up the model socket
-    zmq_model_socket = zmq_context.socket(zmq.PUSH)
-    zmq_model_socket.connect(f"tcp://localhost:{ZMQ_PORT_MODEL_INGESTOR}")
+    zmq_model_socket = zmq_context.socket(zmq.REQ)
+    zmq_model_socket.connect(f"tcp://{ZMQ_HOSTNAME_MODEL}:{ZMQ_PORT_MODEL_INGESTOR}")
 
     # Register the cleanup function with atexit
     atexit.register(cleanup_zmq, zmq_context, zmq_frontend_socket, zmq_model_socket)
