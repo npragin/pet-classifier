@@ -1,86 +1,115 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
-from werkzeug.utils import secure_filename
 import zmq
 import base64
+import atexit
 
 # Port to send images to the data ingestion service
-port = 6620
-
-app = Flask(__name__)
-app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg"}
-
-# Ensure the necessary directories exist for static assets
-os.makedirs("static/js", exist_ok=True)
-os.makedirs("static/css", exist_ok=True)
-
-# Set up ZeroMQ context and publisher socket
-context = zmq.Context()
-publisher = context.socket(zmq.PUB)
-publisher.bind(f"tcp://*:{port}")
+ZMQ_PORT = 98703
 
 
-def allowed_file(filename):
-    return (
-        "." in filename
-        and filename.rsplit(".", 1)[1].lower() in app.config["ALLOWED_EXTENSIONS"]
-    )
+def create_app():
+    app = Flask(__name__)
+    app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg"}
 
+    # Only initialize ZeroMQ in the main process, not in the reloader
+    if not os.environ.get("WERKZEUG_RUN_MAIN"):
+        print("Skipping ZeroMQ initialization in reloader process")
+    else:
+        zmq_socket = setup_zmq()
 
-@app.route("/")
-def home():
-    return render_template("index.html")
+    @app.route("/")
+    def home():
+        return render_template("index.html")
 
+    @app.route("/history")
+    def history():
+        return render_template("history.html")
 
-@app.route("/history")
-def history():
-    return render_template("history.html")
+    @app.route("/data-profile")
+    def data_profile():
+        return render_template("data_profile.html")
 
+    @app.route("/upload", methods=["POST"])
+    def upload_file():
+        # Validate the request
+        success, message = is_valid_request(request)
+        if not success:
+            flash(message, "error")
+            return redirect(url_for("home"))
 
-@app.route("/data-profile")
-def data_profile():
-    return render_template("data_profile.html")
-
-
-@app.route("/upload", methods=["POST"])
-def upload_file():
-    if "file" not in request.files:
-        flash(
-            "There was an error uploading your file. Please refresh the page and try again.",
-            "error",
-        )
-        return
-
-    file = request.files["file"]
-
-    if file.filename == "":
-        flash("Please select a file to upload before submitting.", "error")
-        return
-
-    if file and allowed_file(file.filename):
-        # Read the file data
-        file_data = file.read()
-
-        # Encode the image data as base64
-        encoded_image = base64.b64encode(file_data)
-
-        # Send the encoded image over ZeroMQ
-        publisher.send(encoded_image)
+        # Send the image over ZeroMQ
+        file = request.files["file"]
+        send_image(file.read(), zmq_socket)
 
         print(f"Image '{file.filename}' sent to processing service")
 
-        # Redirect back to the home page
         return redirect(url_for("home"))
 
-    # If we get here, the file type is not allowed
-    flash("File type not allowed. Please upload a PNG, JPG, or JPEG file.", "error")
-    return
+    return app
+
+
+def is_valid_request(request):
+    if "file" not in request.files:
+        return (
+            False,
+            "There was an error uploading your file. Please refresh the page and try again.",
+        )
+
+    file = request.files["file"]
+
+    if not file or file.filename == "":
+        return False, "Please select a file to upload before submitting."
+
+    if not allowed_file(file.filename):
+        return False, "File type not allowed. Please upload a PNG, JPG, or JPEG file."
+
+    return True, None
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in {
+        "png",
+        "jpg",
+        "jpeg",
+    }
+
+
+def setup_zmq():
+    """Initialize ZeroMQ resources"""
+    print("Setting up ZeroMQ resources...")
+    zmq_context = zmq.Context()
+    zmq_socket = zmq_context.socket(zmq.PUB)
+
+    zmq_socket.bind(f"tcp://*:{ZMQ_PORT}")
+    print(f"Successfully bound to port {ZMQ_PORT}")
+
+    atexit.register(cleanup_zmq, zmq_context, zmq_socket)
+
+    return zmq_socket
+
+
+def cleanup_zmq(zmq_context, zmq_socket):
+    """Clean up ZeroMQ resources"""
+    try:
+        if zmq_socket:
+            zmq_socket.close()
+        if zmq_context:
+            zmq_context.term()
+        print("ZeroMQ resources cleaned up successfully")
+    except Exception as e:
+        print(f"Error cleaning up ZeroMQ resources: {e}")
+
+
+def send_image(image, zmq_socket):
+    """Encode and send an image over ZeroMQ"""
+    encoded_image = base64.b64encode(image)
+    try:
+        zmq_socket.send(encoded_image)
+    except Exception as e:
+        print(f"Error sending image: {e}")
 
 
 if __name__ == "__main__":
-    try:
-        app.run(debug=True)
-    finally:
-        # Clean up ZeroMQ resources when the application exits
-        publisher.close()
-        context.term()
+    app = create_app()
+    app.run(debug=True)
