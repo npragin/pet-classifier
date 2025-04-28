@@ -45,7 +45,9 @@ def transform_image_for_model(image):
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
-    return transform(image)
+    transformed_image = transform(image)
+    transformed_batched_image = transformed_image.unsqueeze(0)
+    return transformed_batched_image
 
 
 def main():
