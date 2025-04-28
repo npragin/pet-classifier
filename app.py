@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 from werkzeug.utils import secure_filename
 import zmq
@@ -39,12 +39,17 @@ def data_profile():
 @app.route("/upload", methods=["POST"])
 def upload_file():
     if "file" not in request.files:
-        return redirect(request.url)
+        flash(
+            "There was an error uploading your file. Please refresh the page and try again.",
+            "error",
+        )
+        return
 
     file = request.files["file"]
 
     if file.filename == "":
-        return redirect(request.url)
+        flash("Please select a file to upload before submitting.", "error")
+        return
 
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
@@ -55,7 +60,9 @@ def upload_file():
         # For now, just redirect back to the home page
         return redirect(url_for("home"))
 
-    return redirect(url_for("home"))
+    # If we get here, the file type is not allowed
+    flash("File type not allowed. Please upload a PNG, JPG, or JPEG file.", "error")
+    return
 
 
 if __name__ == "__main__":
