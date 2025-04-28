@@ -4,14 +4,20 @@ from werkzeug.utils import secure_filename
 import zmq
 import base64
 
+# Port to send images to the data ingestion service
+port = 6620
+
 app = Flask(__name__)
-app.config["UPLOAD_FOLDER"] = "static/uploads"
 app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg"}
 
-# Ensure the necessary directories exist
-os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+# Ensure the necessary directories exist for static assets
 os.makedirs("static/js", exist_ok=True)
 os.makedirs("static/css", exist_ok=True)
+
+# Set up ZeroMQ context and publisher socket
+context = zmq.Context()
+publisher = context.socket(zmq.PUB)
+publisher.bind(f"tcp://*:{port}")
 
 
 def allowed_file(filename):
@@ -52,12 +58,18 @@ def upload_file():
         return
 
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        file.save(file_path)
+        # Read the file data
+        file_data = file.read()
 
-        # Here you would process the image with your classification model
-        # For now, just redirect back to the home page
+        # Encode the image data as base64
+        encoded_image = base64.b64encode(file_data)
+
+        # Send the encoded image over ZeroMQ
+        publisher.send(encoded_image)
+
+        print(f"Image '{file.filename}' sent to processing service")
+
+        # Redirect back to the home page
         return redirect(url_for("home"))
 
     # If we get here, the file type is not allowed
@@ -66,4 +78,9 @@ def upload_file():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    try:
+        app.run(debug=True)
+    finally:
+        # Clean up ZeroMQ resources when the application exits
+        publisher.close()
+        context.term()
