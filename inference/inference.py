@@ -30,9 +30,8 @@ def setup_zmq():
 
 def softmax(x):
     # Subtract the maximum value for numerical stability
-    x_max = np.max(x, axis=1, keepdims=True)
-    exp_x = np.exp(x - x_max)
-    return exp_x / np.sum(exp_x, axis=1, keepdims=True)
+    exp_x = np.exp(x - np.max(x))
+    return exp_x / np.sum(exp_x)
 
 def main():
     # Load the model
@@ -58,10 +57,7 @@ def main():
             
             # Get the predicted class and confidence
             predicted_class = np.argmax(output)
-            confidence = softmax(output)[0][predicted_class]
-            print(confidence)
-            print(softmax(output).max())
-            print(softmax(output).shape)
+            confidence = np.max(softmax(output))
             
             # Create a response dictionary
             response = {
