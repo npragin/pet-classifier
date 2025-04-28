@@ -88,9 +88,7 @@ def main():
                 # Forward the error to the frontend
                 zmq_frontend_socket.send(pickle.dumps(result))
             else:
-                print(f"Received result: Class {result['class']}, Confidence {result['confidence']:.4f}, Time {result['inference_time']:.4f}s")
-                # Forward the result to the frontend
-                zmq_frontend_socket.send(pickle.dumps(result))
+                print(f"Received result: Class {result['class']}, Confidence {result['confidence']:.4f}")
             
         except KeyboardInterrupt:
             print("\nReceived KeyboardInterrupt, shutting down gracefully...")
