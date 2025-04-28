@@ -20,7 +20,7 @@ def setup_zmq():
     zmq_context = zmq.Context()
     
     # Set up the ingestor socket
-    zmq_ingestor_socket = zmq_context.socket(zmq.PULL)
+    zmq_ingestor_socket = zmq_context.socket(zmq.REP)
     zmq_ingestor_socket.bind(f"tcp://*:{ZMQ_PORT_MODEL_INGESTOR}")
     
     # Register the cleanup function with atexit
