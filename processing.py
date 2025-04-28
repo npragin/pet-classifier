@@ -5,9 +5,6 @@ import atexit
 from config import ZMQ_PORT_FRONTEND_INGESTOR
 
 
-port = ZMQ_PORT_FRONTEND_INGESTOR
-
-
 def cleanup_zmq(zmq_context, zmq_socket):
     print("Cleaning up resources...")
     if zmq_socket:
@@ -21,7 +18,7 @@ def setup_zmq():
     # Set up the ZeroMQ context and socket
     zmq_context = zmq.Context()
     zmq_socket = zmq_context.socket(zmq.SUB)
-    zmq_socket.connect(f"tcp://localhost:{port}")
+    zmq_socket.connect(f"tcp://localhost:{ZMQ_PORT_FRONTEND_INGESTOR}")
     zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
     # Register the cleanup function with atexit
