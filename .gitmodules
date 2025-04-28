@@ -1,0 +1,9 @@
+[submodule "pet-classifier-model-service"]
+	path = pet-classifier-model-service
+	url = git@github.com:npragin/pet-classifier-model-service.git
+[submodule "pet-classifier-data-ingestor"]
+	path = pet-classifier-data-ingestor
+	url = git@github.com:npragin/pet-classifier-data-ingestor.git
+[submodule "pet-classifier-web-frontend"]
+	path = pet-classifier-web-frontend
+	url = git@github.com:npragin/pet-classifier-web-frontend.git
