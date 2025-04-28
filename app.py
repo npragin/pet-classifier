@@ -4,8 +4,7 @@ import zmq
 import base64
 import atexit
 
-# Port to send images to the data ingestion service
-ZMQ_PORT = 98703
+from config import ZMQ_PORT_FRONTEND_INGESTOR
 
 
 def create_app():
@@ -79,8 +78,8 @@ def setup_zmq():
     zmq_context = zmq.Context()
     zmq_socket = zmq_context.socket(zmq.PUB)
 
-    zmq_socket.bind(f"tcp://*:{ZMQ_PORT}")
-    print(f"Successfully bound to port {ZMQ_PORT}")
+    zmq_socket.bind(f"tcp://*:{ZMQ_PORT_FRONTEND_INGESTOR}")
+    print(f"Successfully bound to port {ZMQ_PORT_FRONTEND_INGESTOR}")
 
     atexit.register(cleanup_zmq, zmq_context, zmq_socket)
 
