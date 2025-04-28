@@ -1,8 +1,9 @@
 import zmq
 import base64
 import atexit
+from torchvision import transforms
 
-from config import ZMQ_PORT_FRONTEND_INGESTOR
+from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_PORT_MODEL_INGESTOR
 
 
 def cleanup_zmq(zmq_context, zmq_socket):
@@ -27,6 +28,16 @@ def setup_zmq():
     return zmq_socket
 
 
+def transform_image_for_model(image):
+    transform = transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+    transformed_image = transform(image).numpy()
+    return transformed_image
+
+
 def main():
     zmq_socket = setup_zmq()
 
@@ -41,6 +52,11 @@ def main():
             # Save the received image
             with open("received_image.png", "wb") as image_file:
                 image_file.write(image_data)
+
+            transformed_image = transform_image_for_model(image_data)
+
+            with open("transformed_image.png", "wb") as image_file:
+                image_file.write(transformed_image)
 
             print("Image received and saved as 'received_image.png'")
 
