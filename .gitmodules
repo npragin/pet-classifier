@@ -7,3 +7,6 @@
 [submodule "pet-classifier-web-frontend"]
 	path = pet-classifier-web-frontend
 	url = git@github.com:npragin/pet-classifier-web-frontend.git
+[submodule "pet-classifier-results-service"]
+	path = pet-classifier-results-service
+	url = git@github.com:npragin/pet-classifier-results-service.git
