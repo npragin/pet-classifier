@@ -66,10 +66,6 @@ def main():
             encoded_image = zmq_frontend_socket.recv()
             image_data = base64.b64decode(encoded_image)
 
-            # Save the received image
-            with open("received_image.png", "wb") as image_file:
-                image_file.write(image_data)
-
             image = Image.open(io.BytesIO(image_data))
             if image.mode == 'RGBA':
                 image = image.convert('RGB')
