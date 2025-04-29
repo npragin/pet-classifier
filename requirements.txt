@@ -6,3 +6,8 @@ numpy
 tensorrt
 tensorflow
 pymongo
+matplotlib
+tqdm
+wandb
+pycuda
+onnx
