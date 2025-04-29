@@ -3,13 +3,15 @@ import os
 import zmq
 import base64
 import atexit
+import pickle
 
-from config import ZMQ_PORT_FRONTEND_INGESTOR
+from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_HOSTNAME_INGESTOR
 
 
 def create_app():
     app = Flask(__name__)
     app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg"}
+    app.config["SECRET_KEY"] = "supersecretkey"
 
     # Only initialize ZeroMQ in the main process, not in the reloader
     if os.environ.get("WERKZEUG_RUN_MAIN"):
@@ -35,11 +37,15 @@ def create_app():
             flash(message, "error")
             return redirect(url_for("home"))
 
-        # Send the image over ZeroMQ
+        # Send the image and wait for response
         file = request.files["file"]
-        send_image(file.read(), zmq_socket)
+        upload_uuid = send_image_and_get_response(file.read(), zmq_socket)
 
-        print(f"Image '{file.filename}' sent to processing service")
+        if upload_uuid:
+            print(f"Image '{file.filename}' sent to processing service. UUID: {upload_uuid}")
+            flash(f"Image uploaded successfully! UUID: {upload_uuid}", "success")
+        else:
+            flash("Error processing image. Please refresh the page and try again.", "error")
 
         return redirect(url_for("home"))
 
@@ -76,10 +82,9 @@ def setup_zmq():
     """Initialize ZeroMQ resources"""
     print("Setting up ZeroMQ resources...")
     zmq_context = zmq.Context()
-    zmq_socket = zmq_context.socket(zmq.PUB)
+    zmq_socket = zmq_context.socket(zmq.REQ)
 
-    zmq_socket.bind(f"tcp://*:{ZMQ_PORT_FRONTEND_INGESTOR}")
-    print(f"Successfully bound to port {ZMQ_PORT_FRONTEND_INGESTOR}")
+    zmq_socket.connect(f"tcp://{ZMQ_HOSTNAME_INGESTOR}:{ZMQ_PORT_FRONTEND_INGESTOR}")
 
     atexit.register(cleanup_zmq, zmq_context, zmq_socket)
 
@@ -98,13 +103,27 @@ def cleanup_zmq(zmq_context, zmq_socket):
         print(f"Error cleaning up ZeroMQ resources: {e}")
 
 
-def send_image(image, zmq_socket):
-    """Encode and send an image over ZeroMQ"""
+def send_image_and_get_response(image, zmq_socket):
+    """Encode and send an image over ZeroMQ, then wait for and return the response UUID or error"""
     encoded_image = base64.b64encode(image)
     try:
+        # Send the image as a request
         zmq_socket.send(encoded_image)
+        
+        # Wait for the response with the UUID
+        response_data = zmq_socket.recv()
+        response = pickle.loads(response_data)
+        
+        # Check if there was an error
+        if "error" in response:
+            print(f"Error from ingestor: {response['error']}")
+            return None
+        
+        # Return the UUID from the response
+        return response.get('uuid')
     except Exception as e:
-        print(f"Error sending image: {e}")
+        print(f"Error in image processing: {e}")
+        return None
 
 
 if __name__ == "__main__":
