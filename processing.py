@@ -27,9 +27,8 @@ def setup_zmq():
     zmq_context = zmq.Context()
 
     # Set up the frontend socket
-    zmq_frontend_socket = zmq_context.socket(zmq.SUB)
-    zmq_frontend_socket.connect(f"tcp://{ZMQ_HOSTNAME_FRONTEND}:{ZMQ_PORT_FRONTEND_INGESTOR}")
-    zmq_frontend_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+    zmq_frontend_socket = zmq_context.socket(zmq.REP)
+    zmq_frontend_socket.bind(f"tcp://*:{ZMQ_PORT_FRONTEND_INGESTOR}")
     
     # Set up the model socket
     zmq_model_socket = zmq_context.socket(zmq.REQ)
