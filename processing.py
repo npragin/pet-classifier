@@ -6,11 +6,13 @@ from PIL import Image
 import io
 import pickle
 
-from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_PORT_MODEL_INGESTOR, ZMQ_HOSTNAME_FRONTEND, ZMQ_HOSTNAME_MODEL
+from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_PORT_MODEL_INGESTOR, ZMQ_HOSTNAME_FRONTEND, ZMQ_HOSTNAME_MODEL, ZMQ_PORT_RESULTS_INGESTOR, ZMQ_HOSTNAME_RESULTS
 
 
-def cleanup_zmq(zmq_context, zmq_frontend_socket, zmq_model_socket):
+def cleanup_zmq(zmq_context, zmq_frontend_socket, zmq_model_socket, zmq_results_socket):
     print("Cleaning up resources...")
+    if zmq_results_socket:
+        zmq_results_socket.close()
     if zmq_model_socket:
         zmq_model_socket.close()
     if zmq_frontend_socket:
@@ -32,11 +34,15 @@ def setup_zmq():
     # Set up the model socket
     zmq_model_socket = zmq_context.socket(zmq.REQ)
     zmq_model_socket.connect(f"tcp://{ZMQ_HOSTNAME_MODEL}:{ZMQ_PORT_MODEL_INGESTOR}")
+    
+    # Set up the results socket
+    zmq_results_socket = zmq_context.socket(zmq.REQ)
+    zmq_results_socket.connect(f"tcp://{ZMQ_HOSTNAME_RESULTS}:{ZMQ_PORT_RESULTS_INGESTOR}")
 
     # Register the cleanup function with atexit
-    atexit.register(cleanup_zmq, zmq_context, zmq_frontend_socket, zmq_model_socket)
+    atexit.register(cleanup_zmq, zmq_context, zmq_frontend_socket, zmq_model_socket, zmq_results_socket)
 
-    return zmq_frontend_socket, zmq_model_socket
+    return zmq_frontend_socket, zmq_model_socket, zmq_results_socket
 
 
 def transform_image_for_model(image):
@@ -51,7 +57,7 @@ def transform_image_for_model(image):
 
 
 def main():
-    zmq_frontend_socket, zmq_model_socket = setup_zmq()
+    zmq_frontend_socket, zmq_model_socket, zmq_results_socket = setup_zmq()
 
     print("Listening for images. Press Ctrl+C to exit.")
 
@@ -89,6 +95,28 @@ def main():
                 zmq_frontend_socket.send(pickle.dumps(result))
             else:
                 print(f"Received result: Class {result['class']}, Confidence {result['confidence']:.4f}")
+                
+                # Send the result to the results service
+                results_data = {
+                    "class": result['class'],
+                    "confidence": result['confidence'],
+                    "image": encoded_image
+                }
+                zmq_results_socket.send(pickle.dumps(results_data))
+                
+                # Wait for the UUID from the results service
+                serialized_uuid = zmq_results_socket.recv()
+                uuid_result = pickle.loads(serialized_uuid)
+                
+                if "error" in uuid_result:
+                    print(f"Error from results service: {uuid_result['error']}")
+                else:
+                    print(f"Received UUID from results service: {uuid_result['uuid']}")
+                    # Add the UUID to the result
+                    result['uuid'] = uuid_result['uuid']
+                
+                # Forward the result to the frontend
+                zmq_frontend_socket.send(pickle.dumps(result))
             
         except KeyboardInterrupt:
             print("\nReceived KeyboardInterrupt, shutting down gracefully...")
