@@ -62,7 +62,7 @@ def main():
 
     while True:
         try:
-            # Receive and decode the image data
+            # Receive and decode the image data from the frontend
             encoded_image = zmq_frontend_socket.recv()
             image_data = base64.b64decode(encoded_image)
 
@@ -75,8 +75,6 @@ def main():
                 image = image.convert('RGB')
 
             transformed_image = transform_image_for_model(image)
-
-            print(f"Shape: {transformed_image.shape}")
             
             # Serialize the tensor and send it over ZMQ to the model service
             serialized_tensor = pickle.dumps(transformed_image)
