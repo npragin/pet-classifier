@@ -5,7 +5,7 @@ import base64
 import atexit
 import pickle
 
-from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_HOSTNAME_INGESTOR
+from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_HOSTNAME_INGESTOR, ZMQ_PORT_RESULTS_INGESTOR, ZMQ_HOSTNAME_RESULTS_FRONTEND
 
 
 def create_app():
@@ -15,7 +15,7 @@ def create_app():
 
     # Only initialize ZeroMQ in the main process, not in the reloader
     if os.environ.get("WERKZEUG_RUN_MAIN"):
-        zmq_socket = setup_zmq()
+        zmq_ingestor_socket, zmq_results_socket = setup_zmq()
 
     @app.route("/")
     def home():
@@ -29,6 +29,30 @@ def create_app():
     def data_profile():
         return render_template("data_profile.html")
 
+    @app.route("/<uuid>")
+    def get_result(uuid):
+        try:
+            # Send request to results service
+            request_data = {"uuid": uuid}
+            zmq_results_socket.send(pickle.dumps(request_data))
+            
+            # Wait for response
+            response_data = zmq_results_socket.recv()
+            response = pickle.loads(response_data)
+            
+            if "error" in response:
+                flash(f"Error retrieving result: {response['error']}", "error")
+                return redirect(url_for("home"))
+            
+            # For now, just print the response
+            print(f"Received result for UUID {uuid}: {response}")
+            return "Result received"  # We'll add template rendering in the next step
+            
+        except Exception as e:
+            print(f"Error retrieving result: {e}")
+            flash("Error retrieving result. Please try again later.", "error")
+            return redirect(url_for("home"))
+
     @app.route("/upload", methods=["POST"])
     def upload_file():
         # Validate the request
@@ -39,11 +63,12 @@ def create_app():
 
         # Send the image and wait for response
         file = request.files["file"]
-        upload_uuid = send_image_and_get_response(file.read(), zmq_socket)
+        upload_uuid = send_image_and_get_response(file.read(), zmq_ingestor_socket)
 
         if upload_uuid:
             print(f"Image '{file.filename}' sent to processing service. UUID: {upload_uuid}")
             flash(f"Image uploaded successfully! UUID: {upload_uuid}", "success")
+            return redirect(url_for("get_result", uuid=upload_uuid))
         else:
             flash("Error processing image. Please refresh the page and try again.", "error")
 
@@ -82,20 +107,25 @@ def setup_zmq():
     """Initialize ZeroMQ resources"""
     print("Setting up ZeroMQ resources...")
     zmq_context = zmq.Context()
-    zmq_socket = zmq_context.socket(zmq.REQ)
 
-    zmq_socket.connect(f"tcp://{ZMQ_HOSTNAME_INGESTOR}:{ZMQ_PORT_FRONTEND_INGESTOR}")
+    zmq_ingestor_socket = zmq_context.socket(zmq.REQ)
+    zmq_ingestor_socket.connect(f"tcp://{ZMQ_HOSTNAME_INGESTOR}:{ZMQ_PORT_FRONTEND_INGESTOR}")
 
-    atexit.register(cleanup_zmq, zmq_context, zmq_socket)
+    zmq_results_socket = zmq_context.socket(zmq.REQ)
+    zmq_results_socket.connect(f"tcp://{ZMQ_HOSTNAME_RESULTS_FRONTEND}:{ZMQ_PORT_RESULTS_INGESTOR}")
 
-    return zmq_socket
+    atexit.register(cleanup_zmq, zmq_context, zmq_ingestor_socket, zmq_results_socket)
+
+    return zmq_ingestor_socket, zmq_results_socket
 
 
-def cleanup_zmq(zmq_context, zmq_socket):
+def cleanup_zmq(zmq_context, zmq_ingestor_socket, zmq_results_socket):
     """Clean up ZeroMQ resources"""
     try:
-        if zmq_socket:
-            zmq_socket.close()
+        if zmq_ingestor_socket:
+            zmq_ingestor_socket.close()
+        if zmq_results_socket:
+            zmq_results_socket.close()
         if zmq_context:
             zmq_context.term()
         print("ZeroMQ resources cleaned up successfully")
