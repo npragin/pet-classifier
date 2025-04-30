@@ -6,7 +6,7 @@ from PIL import Image
 import io
 import pickle
 
-from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_PORT_MODEL_INGESTOR, ZMQ_HOSTNAME_FRONTEND, ZMQ_HOSTNAME_MODEL, ZMQ_PORT_RESULTS_INGESTOR, ZMQ_HOSTNAME_RESULTS
+from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_PORT_MODEL_INGESTOR, ZMQ_HOSTNAME_MODEL, ZMQ_PORT_RESULTS_INGESTOR, ZMQ_HOSTNAME_RESULTS
 
 
 def cleanup_zmq(zmq_context, zmq_frontend_socket, zmq_model_socket, zmq_results_socket):
