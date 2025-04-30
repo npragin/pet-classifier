@@ -72,6 +72,7 @@ def create_app():
             feedback = feedback_data.get("feedback")
 
             if not uuid or feedback is None:
+                flash("Error submitting feedback. Please refresh the page and try again.", "error")
                 return jsonify({"error": "Missing required fields"}), 400
 
             # Send feedback to results service
@@ -87,6 +88,7 @@ def create_app():
             response = pickle.loads(response_data)
             
             if "error" in response:
+                flash("Error submitting feedback. Please refresh the page and try again.", "error")
                 print(f"Error from results service: {response['error']}")
                 return jsonify({"error": response["error"]}), 400
             

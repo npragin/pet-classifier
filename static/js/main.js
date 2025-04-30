@@ -45,12 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
               btn.classList.add('disabled');
             });
             this.classList.add('selected');
-          } else {
-            alert('Error submitting feedback. Please try again.');
           }
         } catch (error) {
           console.error('Error:', error);
-          alert('Error submitting feedback. Please try again.');
         }
       });
     });
