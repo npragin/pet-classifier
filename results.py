@@ -99,7 +99,7 @@ def insert_result(db_conn, req):
 
     print(f"Stored record with UUID: {record_uuid}")
 
-    return record_uuid
+    return {"uuid": record_uuid}
 
 def get_single_result(db_conn, req):
     # Get the UUID from the request
