@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import os
 import zmq
 import base64
@@ -56,6 +56,40 @@ def create_app():
             print(f"Error retrieving result: {e}")
             flash("Error retrieving result. Please try again later.", "error")
             return redirect(url_for("home"))
+
+    @app.route("/feedback", methods=["POST"])
+    def submit_feedback():
+        try:
+            # Get feedback data from request
+            feedback_data = request.get_json()
+            uuid = feedback_data.get("uuid")
+            feedback = feedback_data.get("feedback")
+
+            if not uuid or feedback is None:
+                return jsonify({"error": "Missing required fields"}), 400
+
+            # Send feedback to results service
+            request_data = {
+                "uuid": uuid,
+                "feedback": feedback
+            }
+            print(f"Sending feedback to results service: {request_data}")
+            zmq_results_socket.send(pickle.dumps(request_data))
+            
+            # Wait for response
+            response_data = zmq_results_socket.recv()
+            response = pickle.loads(response_data)
+            
+            if "error" in response:
+                print(f"Error from results service: {response['error']}")
+                return jsonify({"error": response["error"]}), 400
+            
+            print(f"Feedback submitted successfully.")
+            return jsonify({"success": True})
+            
+        except Exception as e:
+            print(f"Error submitting feedback: {e}")
+            return jsonify({"error": "Internal server error"}), 500
 
     @app.route("/upload", methods=["POST"])
     def upload_file():

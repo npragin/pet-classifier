@@ -13,6 +13,48 @@ document.addEventListener('DOMContentLoaded', function() {
   const imagePreview = document.getElementById('image-preview');
   const submitButton = document.getElementById('submit-button');
   const uploadForm = document.getElementById('upload-form');
+  const feedbackButtons = document.querySelectorAll('.feedback-btn');
+
+  // Handle feedback button clicks
+  if (feedbackButtons.length > 0) {
+    feedbackButtons.forEach(button => {
+      button.addEventListener('click', async function() {
+        // Get the UUID from the URL
+        const uuid = window.location.pathname.split('/').pop();
+        const isCorrect = this.classList.contains('correct');
+        
+        try {
+          // Send feedback to the server
+          const response = await fetch('/feedback', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uuid: uuid,
+              feedback: isCorrect
+            })
+          });
+
+          const result = await response.json();
+          
+          if (result.success) {
+            // Disable both buttons or show error message
+            feedbackButtons.forEach(btn => {
+              btn.disabled = true;
+              btn.classList.add('disabled');
+            });
+            this.classList.add('selected');
+          } else {
+            alert('Error submitting feedback. Please try again.');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error submitting feedback. Please try again.');
+        }
+      });
+    });
+  }
 
   // Only initialize if we're on the upload page
   if (!dropArea) return;
