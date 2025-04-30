@@ -437,3 +437,129 @@ footer {
         flex-direction: column;
     }
 }
+
+/* History page specific styles */
+.history-container {
+    display: flex;
+    gap: 30px;
+    padding: 20px;
+}
+
+.history-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.history-card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.image-container {
+    background: #e0e0e0;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+}
+
+.history-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.classification-label {
+    padding: 15px;
+    text-align: center;
+    background: #fff;
+    font-size: 1.1em;
+    border-top: 1px solid #eee;
+}
+
+.filters-panel {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.filters-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.filters-card h2 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.filter-section {
+    margin-bottom: 25px;
+}
+
+.filter-section h3 {
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Add specific styles for classification filter options */
+.classification-filter .filter-options {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.filter-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.history-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments for history page */
+@media (max-width: 1200px) {
+    .history-container {
+        flex-direction: column-reverse;
+    }
+
+    .filters-panel {
+        width: 100%;
+    }
+
+    .filter-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .history-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,16 @@
+{% if history_items %}
+    {% for item in history_items %}
+        <div class="history-card">
+            <div class="image-container">
+                <img src="{{ item.image }}" alt="Pet Image" class="history-image">
+            </div>
+            <div class="classification-label">
+                {{ item.class }}: {{ item.confidence * 100 }}%
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="history-empty">
+        <p>No classification history yet. Upload an image on the home page to get started.</p>
+    </div>
+{% endif %} 

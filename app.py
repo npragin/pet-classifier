@@ -27,9 +27,49 @@ def create_app():
     def home():
         return render_template("index.html")
 
-    @app.route("/history")
+    @app.route("/history", methods=["GET", "POST"])
     def history():
-        return render_template("history.html")
+        try:
+            # Get filter parameters from POST request or use empty lists as default
+            if request.method == "POST":
+                data = request.get_json()
+                confidences = data.get("confidences", [])
+                classes = data.get("classes", [])
+            else:
+                confidences = []
+                classes = []
+
+            # Send request for history data
+            request_data = {
+                "length": 8,
+                "confidences": confidences,
+                "classes": classes
+            }
+            zmq_results_socket.send(pickle.dumps(request_data))
+            
+            # Wait for response
+            response_data = zmq_results_socket.recv()
+            history_items = pickle.loads(response_data)
+            
+            # Format images as data URLs
+            for history in history_items:
+                # The image is already base64 encoded, just need to add the data URL prefix
+                history["image"] = f"data:image/jpeg;base64,{history['image'].decode('utf-8')}"
+            
+            if request.method == "POST":
+                # Return only the grid content for AJAX updates
+                return render_template("history_grid.html", history_items=history_items)
+            else:
+                # Return full page for initial load
+                return render_template("history.html", history_items=history_items)
+
+        except Exception as e:
+            print(f"Error retrieving history: {e}")
+            flash("Error retrieving history. Please try again later.", "error")
+            if request.method == "POST":
+                return render_template("history_grid.html", history_items=[])
+            else:
+                return render_template("history.html", history_items=[])
 
     @app.route("/data-profile")
     def data_profile():

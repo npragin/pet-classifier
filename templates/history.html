@@ -3,26 +3,63 @@
 {% block title %}Pet Breed Classifier - History{% endblock %}
 
 {% block content %}
-<div class="card">
-    <h2>Classification History</h2>
-    <p>Your previous classification results will appear here.</p>
-    
-    <div class="history-empty">
-        <p>No classification history yet. Upload an image on the home page to get started.</p>
-    </div>
-    
-    <!-- This section would be populated with actual history entries -->
-    <div class="history-list" style="display: none;">
-        <!-- Example history entry -->
-        <div class="history-item">
-            <div class="history-image">
-                <img src="#" alt="Pet">
+<div class="history-container">
+    <div class="history-grid" id="history-grid">
+        {% if history_items %}
+            {% for item in history_items %}
+                <div class="history-card">
+                    <div class="image-container">
+                        <img src="{{ item.image }}" alt="Pet Image" class="history-image">
+                    </div>
+                    <div class="classification-label">
+                        {{ item.class }}
+                        <br>
+                        Confidence: {{ "%.2f"|format(item.confidence * 100) }}%
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="history-empty">
+                <p>No classification history yet. Upload an image on the home page to get started.</p>
             </div>
-            <div class="history-details">
-                <h3>Classification Result</h3>
-                <p>Date: <span class="date">April 25, 2025</span></p>
-                <p>Prediction: <span class="prediction">Maine Coon</span></p>
-                <p>Confidence: <span class="confidence">95%</span></p>
+        {% endif %}
+    </div>
+
+    <div class="filters-panel">
+        <div class="filters-card">
+            <h2>Filters</h2>
+            
+            <div class="filter-section">
+                <h3>Filter by Confidence</h3>
+                <div class="filter-options">
+                    <label class="filter-checkbox">
+                        <input type="checkbox" name="confidence" value="2">
+                        High (90+%)
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" name="confidence" value="1">
+                        Medium (70-90%)
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" name="confidence" value="0">
+                        Low (<70%)
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section classification-filter">
+                <h3>Filter by Classification</h3>
+                <div class="filter-options">
+                    {% for i in range(0, 37) %}
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="classification" value="{{ i }}">
+                            <!-- TODO: When it is time to integrate with the breed selection service
+                                     Modify below, not value
+                            -->
+                            {{ i }}
+                        </label>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

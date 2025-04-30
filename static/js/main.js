@@ -14,6 +14,44 @@ document.addEventListener('DOMContentLoaded', function() {
   const submitButton = document.getElementById('submit-button');
   const uploadForm = document.getElementById('upload-form');
   const feedbackButtons = document.querySelectorAll('.feedback-btn');
+  const historyFilterCheckboxes = document.querySelectorAll('.filter-checkbox input[type="checkbox"]');
+
+  // Handle history filter changes
+  if (historyFilterCheckboxes.length > 0) {
+    historyFilterCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', updateHistory);
+    });
+  }
+
+  // Update history based on filter selections
+  async function updateHistory() {
+    try {
+      // Collect selected confidence levels
+      const confidenceCheckboxes = document.querySelectorAll('input[name="confidence"]:checked');
+      const confidences = Array.from(confidenceCheckboxes).map(cb => parseInt(cb.value));
+      
+      // Collect selected classifications
+      const classificationCheckboxes = document.querySelectorAll('input[name="classification"]:checked');
+      const classes = Array.from(classificationCheckboxes).map(cb => parseInt(cb.value));
+      
+      // Make AJAX request
+      const response = await fetch('/history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          confidences: confidences,
+          classes: classes
+        })
+      });
+
+      const html = await response.text();
+      document.getElementById('history-grid').innerHTML = html;
+    } catch (error) {
+      console.error('Error updating history:', error);
+    }
+  }
 
   // Handle feedback button clicks
   if (feedbackButtons.length > 0) {
