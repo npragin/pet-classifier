@@ -385,16 +385,8 @@ footer {
     transform: translateY(-1px);
 }
 
-.feedback-btn.correct {
-    border-color: #4CAF50;
-}
-
 .feedback-btn.correct:hover {
     background-color: #f5fff5;
-}
-
-.feedback-btn.incorrect {
-    border-color: #f44336;
 }
 
 .feedback-btn.incorrect:hover {
