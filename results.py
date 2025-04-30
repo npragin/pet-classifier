@@ -67,7 +67,8 @@ def setup_database():
         class INTEGER,
         confidence REAL,
         image TEXT,
-        timestamp DATETIME
+        timestamp DATETIME,
+        feedback BOOLEAN
     )
     """
     )
@@ -145,6 +146,29 @@ def get_history(db_conn, req):
         for result in results
     ]
 
+def update_feedback(db_conn, req):
+    print(f"Received feedback: {req}")
+    
+    # Get the UUID and feedback from the request
+    request_uuid = req["uuid"]
+    
+    # Update the feedback in the database
+    cursor = db_conn.cursor()
+    cursor.execute(
+        "UPDATE classification_results SET feedback = ? WHERE uuid = ?",
+        (bool(req["feedback"]), request_uuid)
+    )
+    
+    # Check if any row was updated
+    if cursor.rowcount == 0:
+        print(f"No record found for UUID: {request_uuid}")
+        return {"error": f"No record found for UUID: {request_uuid}"}
+        
+    db_conn.commit()
+    print(f"Updated feedback for UUID: {request_uuid}")
+    
+    return {"success": True}
+
 def main():
     zmq_ingestor_socket = setup_zmq()
     db_conn = setup_database()
@@ -159,6 +183,8 @@ def main():
 
             if "class" in req and "confidence" in req and "image" in req:
                 response = insert_result(db_conn, req)
+            elif "feedback" in req:
+                response = update_feedback(db_conn, req)
             elif "uuid" in req:
                 response = get_single_result(db_conn, req)
             elif "length" in req:
