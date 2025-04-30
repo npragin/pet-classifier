@@ -125,16 +125,46 @@ def get_single_result(db_conn, req):
         return {"error": f"No record found for UUID: {request_uuid}"}
 
 def get_history(db_conn, req):
-    # Get the length parameter from the request
+    # Get the parameters from the request
     length = int(req["length"])
+    confidences = req["confidences"]
+    classes = req["classes"]
     
-    # Query the database for most recent entries
+    # Build the WHERE clause based on filters
+    conditions = []
+    params = []
+
+    # Handle confidence filters
+    confidence_conditions = []
+    if confidences:
+        if 2 in confidences:  # High confidence (>= 0.9)
+            confidence_conditions.append("confidence >= 0.9")
+        if 1 in confidences:  # Medium confidence (0.7-0.9)
+            confidence_conditions.append("(confidence >= 0.7 AND confidence < 0.9)")
+        if 0 in confidences:  # Low confidence (< 0.7)
+            confidence_conditions.append("confidence < 0.7")
+        
+        if confidence_conditions:
+            conditions.append(f"({' OR '.join(confidence_conditions)})")
+
+    # Handle class filters
+    if classes:
+        conditions.append(f"class IN ({','.join('?' * len(classes))})")
+        params.extend(classes)
+
+    # Build the final query
+    query = "SELECT class, confidence, image FROM classification_results"
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+    query += " ORDER BY timestamp DESC LIMIT ?"
+    params.append(length)
+
+    # Execute query
     cursor = db_conn.cursor()
-    cursor.execute(
-        "SELECT class, confidence, image FROM classification_results ORDER BY timestamp DESC LIMIT ?",
-        (length,)
-    )
+    cursor.execute(query, tuple(params))
     results = cursor.fetchall()
+
+    print(f"Returning filtered results. Query: {query}, Params: {params}")
     
     # Convert results to list of dictionaries
     return [
