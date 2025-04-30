@@ -5,41 +5,75 @@
 {% block content %}
 <div class="card">
     <h2>Data Profile</h2>
-    <p>Information about the training data used in our pet classification model.</p>
+    <p>Information about the training data (<a href="https://www.robots.ox.ac.uk/~vgg/data/pets/">Oxford-IIIT Pet Dataset</a>) used in our pet classification model.</p>
     
-    <div class="data-stats">
-        <h3>Dataset Statistics</h3>
-        <ul>
-            <li>Total number of images: 10,000+</li>
-            <li>Number of cat breeds: 42</li>
-            <li>Number of big cat species: 15</li>
-            <li>Image resolution range: 224x224 to 1024x1024 pixels</li>
-            <li>Dataset collection period: 2020-2024</li>
-        </ul>
+    <div class="data-section">
+        <h3>Class Balance</h3>
+        <div class="data-grid">
+            <div class="text-content">
+                <p>
+                    The Oxford-IIIT Pet Dataset offers a wonderfully diverse snapshot of our favorite companion
+                    animals, featuring 25 dog breeds totaling 4,978 images and 12 cat breeds comprising 2,371 images.
+                    This numerical imbalance (dogs outnumber cats by about 2:1) reflects the real-world reality that
+                    there are more recognized dog breeds than cat breeds. Each individual breed is well-represented
+                    with approximately 200 images per category (with just a few exceptions like the British Shorthair
+                    at 184 and Staffordshire Bull Terrier at 189). While this dataset captures the wide variety of our
+                    four-legged friends, it's worth noting that the dog/cat imbalance may cause our classification model
+                    to perform slightly better with dogs than cats simply because more canine examples were seen during
+                    training. Whether you have a tiny Chihuahua, a fluffy Persian, or a majestic Great Pyrenees, our pet
+                    classification model has been trained to recognize your beloved companion!
+                </p>
+            </div>
+            <div class="image-content">
+                <img src="{{ url_for('static', filename='images/class_balance.png') }}" alt="Class Balance Image">
+            </div>
+        </div>
+    </div>
+
+    <div class="data-section">
+        <h3>Label Noise</h3>
+        <div class="data-grid reversed">
+            <div class="image-content">
+                <img src="{{ url_for('static', filename='images/basset_beagle_comparison.png') }}" alt="Basset Hound and Beagle Comparison">
+            </div>
+            <div class="text-content">
+                <p>
+                    The training dataset may contain some incorrectly labeled images, or label noise. Even experienced animal lovers and veterinarians
+                    sometimes struggle to distinguish between visually similar breeds like Basset Hounds and Beagles (both with
+                    droopy ears and similar coloration), British Shorthairs and Russian Blues (both blue-gray cats with similar body
+                    types), or Ragdolls and Birmans (both with pointed coloration and semi-long fur). These challenging distinctions
+                    can introduce incorrect labels in the training data that the model then learns and reproduces. When our model
+                    occasionally mistakes one breed for a similar-looking breed, it may reflect these challenges for human experts.
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="card">
     <h2>Bias Assessment</h2>
-    <p>Analysis of potential biases in our classification model.</p>
-    
-    <div class="bias-assessment">
-        <h3>Known Biases</h3>
-        <ul>
-            <li>Higher accuracy for commonly photographed breeds</li>
-            <li>May perform better on professional photos than casual snapshots</li>
-            <li>Limited performance on mixed-breed cats</li>
-            <li>Potential confusion between visually similar breeds</li>
-        </ul>
-        
-        <h3>Mitigation Strategies</h3>
-        <p>We continuously work to improve our model by:</p>
-        <ul>
-            <li>Expanding our dataset with diverse images</li>
-            <li>Implementing data augmentation techniques</li>
-            <li>Regular model evaluations across breed categories</li>
-            <li>Collecting user feedback to identify misclassifications</li>
-        </ul>
+
+    <div class="data-section">
+        <div class="data-grid">
+            <div class="text-content">
+                <p>
+                    While our pet recognition model aims to accurately identify a wide variety of dog and cat breeds, there are
+                    some important limitations to be aware of. The numerical imbalance in our dataset (4,978 dog images versus
+                    2,371 cat images) may cause the model to perform better on dog recognition simply because it has seen more
+                    canine examples during training. Similarly, breeds with distinctive features, like the wrinkly Shar-Pei or
+                    hairless Sphynx cat, may be identified with greater accuracy than breeds sharing similar characteristics, such
+                    as the various terrier breeds, which can sometimes be confused with one another. The dataset includes pets
+                    photographed in various lighting conditions, backgrounds, and photo styles—from professional portraits to casual
+                    snapshots—but in-focus images will produce the best results as this better reflects the training data. Color
+                    patterns can also affect recognition—cats with tabby patterns might occasionally be misclassified among
+                    similar-patterned breeds. Our model may struggle with mixed-breed pets, unusual angles, or pets wearing
+                    accessories; providing clear, well-lit photos of your pet's face will help achieve the most accurate results.
+                </p>
+            </div>
+            <div class="image-content">
+                <img src="{{ url_for('static', filename='images/bombay_example.png') }}" alt="Bombay Cat Training Image Example">
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

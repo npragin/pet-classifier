@@ -170,7 +170,60 @@ footer {
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive styles */
+/* Data Profile and Bias Assessment styles */
+.data-section {
+    margin-top: 30px;
+}
+
+.data-section h3 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.data-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 30px;
+}
+
+.text-content {
+    padding-right: 20px;
+}
+
+.image-content {
+    display: flex;
+    justify-content: center;
+    align-self: center;
+}
+
+.image-content img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #f4f4f4;
+}
+
+/* Reversed layout */
+.data-grid.reversed {
+    grid-template-columns: 2fr 3fr;
+}
+
+.data-grid.reversed .text-content {
+    padding-right: 0;
+    padding-left: 20px;
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.data-grid.reversed .image-content {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
     header .container {
         flex-direction: column;
@@ -187,6 +240,19 @@ footer {
     
     .navigation li:first-child {
         margin-left: 0;
+    }
+    
+    .data-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .text-content {
+        padding-right: 0;
+    }
+    
+    .image-content {
+        margin-top: 20px;
     }
 }
 
