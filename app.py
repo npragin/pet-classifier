@@ -8,6 +8,12 @@ import pickle
 from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_HOSTNAME_INGESTOR, ZMQ_PORT_RESULTS_INGESTOR, ZMQ_HOSTNAME_RESULTS_FRONTEND
 
 
+# Limit OpenBLAS threads to avoid hitting process limits
+os.environ["OPENBLAS_NUM_THREADS"] = "12"
+os.environ["MKL_NUM_THREADS"] = "12"
+os.environ["OMP_NUM_THREADS"] = "12"
+
+
 def create_app():
     app = Flask(__name__)
     app.config["ALLOWED_EXTENSIONS"] = {"png", "jpg", "jpeg"}
