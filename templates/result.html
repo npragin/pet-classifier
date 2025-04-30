@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Classification Result{% endblock %}
+
+{% block content %}
+<div class="result-card">
+    <div class="result-image">
+        <img src="data:image/jpeg;base64,{{ image }}" alt="Classified Pet Image">
+    </div>
+    
+    <div class="result-details">
+        <div class="result-header">
+            <h2 class="breed-name">{{ classification }}</h2>
+            <div class="confidence">
+                Confidence: 
+                <span class="confidence-value 
+                    {%- if confidence >= 0.9 %} confidence-high
+                    {%- elif confidence >= 0.7 %} confidence-medium
+                    {%- else %} confidence-low
+                    {%- endif %}">
+                    {{ "%.1f"|format(confidence * 100) }}%
+                </span>
+            </div>
+        </div>
+
+        <p class="breed-description">
+            Maine coon egyptian mau so lynx, jaguar or british shorthair birman or persian. Ragdoll siberian cornish rex for malkin, ragdoll so abyssinian jaguar. Cougar donskoy puma but burmese thai tomcat.
+        </p>
+
+        <a href="https://wikipedia.org/wiki/{{ classification|replace(' ', '_') }}" target="_blank" class="wiki-link">
+            Learn more on Wikipedia
+        </a>
+
+        <div class="feedback-buttons">
+            <button class="btn feedback-btn correct">
+                <span class="icon">👍</span> Correct
+            </button>
+            <button class="btn feedback-btn incorrect">
+                <span class="icon">👎</span> Incorrect
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %} 

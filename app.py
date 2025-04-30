@@ -43,10 +43,14 @@ def create_app():
             if "error" in response:
                 flash(f"Error retrieving result: {response['error']}", "error")
                 return redirect(url_for("home"))
-            
-            # For now, just print the response
-            print(f"Received result for UUID {uuid}: {response}")
-            return "Result received"  # We'll add template rendering in the next step
+
+            # Render the template with the classification results
+            return render_template(
+                "result.html",
+                classification=response["class"],
+                confidence=response["confidence"],
+                image=response["image"].decode('utf-8')  # Decode the base64 image
+            )
             
         except Exception as e:
             print(f"Error retrieving result: {e}")
@@ -66,8 +70,6 @@ def create_app():
         upload_uuid = send_image_and_get_response(file.read(), zmq_ingestor_socket)
 
         if upload_uuid:
-            print(f"Image '{file.filename}' sent to processing service. UUID: {upload_uuid}")
-            flash(f"Image uploaded successfully! UUID: {upload_uuid}", "success")
             return redirect(url_for("get_result", uuid=upload_uuid))
         else:
             flash("Error processing image. Please refresh the page and try again.", "error")

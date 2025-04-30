@@ -271,3 +271,154 @@ footer {
         padding: 20px 15px;
     }
 }
+
+/* Result page styles */
+.result-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 900px;
+    padding: 30px;
+    overflow: hidden;
+}
+
+.result-image {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.result-image img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+.result-details {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.breed-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.confidence {
+    font-size: 18px;
+    color: #666;
+}
+
+.confidence-value {
+    font-weight: 700;
+}
+
+.confidence-high {
+    color: #4CAF50;  /* Green */
+}
+
+.confidence-medium {
+    color: #FFA726;  /* Orange/Yellow */
+}
+
+.confidence-low {
+    color: #F44336;  /* Red */
+}
+
+.breed-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.wiki-link {
+    display: inline-block;
+    color: #4285f4;
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.wiki-link:hover {
+    text-decoration: underline;
+}
+
+.feedback-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.feedback-btn {
+    max-width: 25%;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    color: #333;
+}
+
+.feedback-btn:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.feedback-btn.correct {
+    border-color: #4CAF50;
+}
+
+.feedback-btn.correct:hover {
+    background-color: #f5fff5;
+}
+
+.feedback-btn.incorrect {
+    border-color: #f44336;
+}
+
+.feedback-btn.incorrect:hover {
+    background-color: #fff5f5;
+}
+
+.icon {
+    font-size: 18px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .result-card {
+        margin: 10px;
+        padding: 20px;
+    }
+
+    .result-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .feedback-buttons {
+        flex-direction: column;
+    }
+}
