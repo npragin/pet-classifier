@@ -11,7 +11,7 @@
 <body>
     <header>
         <div class="container">
-            <h1 class="logo">Pet Breed Classifier</h1>
+            <h1 class="logo"><a href="{{ url_for('home') }}">Pet Breed Classifier</a></h1>
             <nav>
                 <ul class="navigation">
                     <li><a href="{{ url_for('home') }}" class="{% if request.path == url_for('home') %}active{% endif %}">Home</a></li>

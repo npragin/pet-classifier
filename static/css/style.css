@@ -56,6 +56,16 @@ header {
     display: inline-block;
 }
 
+.logo a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+.logo a:hover {
+    color: #4285f4;
+}
+
 header .container {
     display: flex;
     justify-content: space-between;
