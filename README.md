@@ -16,3 +16,4 @@ Clients must connect to the service at `tcp://localhost:5555` using ZeroMQ and s
 ```python
 request = {"class": 0}  # Valid class IDs: 0 to 36
 
+
