@@ -63,7 +63,7 @@ Expected output:
 ## 📊 UML Sequence Diagram that shows how client and microservice interact
 The diagram below illustrates the interaction between the client and the BreedCheckerService microservice
 
-./UML_BreedChecker.png
+![UML Sequence Diagram](./UML-BreedChecker.png)
 
 
 ## 🔨 Setup Instructions
