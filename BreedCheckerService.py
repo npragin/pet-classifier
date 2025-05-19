@@ -53,6 +53,7 @@ while True:
     message = socket.recv()
     request = pickle.loads(message)
 
+    print("=============================================")
     if "class" in request:
         class_id = request["class"]
         print("Received class request for class ID:", class_id)
