@@ -6,7 +6,7 @@ import sqlite3
 import datetime
 import os
 
-from config.config import ZMQ_PORT_RESULTS_INGESTOR
+from config import ZMQ_PORT_RESULTS_INGESTOR
 
 
 # Limit OpenBLAS threads to avoid hitting process limits
