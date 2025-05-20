@@ -3,7 +3,7 @@
 	url = git@github.com:npragin/pet-classifier-model-service.git
 	branch = main
 [submodule "pet-classifier-data-ingestor"]
-	path = data-ingestor
+	path = data-ingestion-service
 	url = git@github.com:npragin/pet-classifier-data-ingestor.git
 	branch = main
 [submodule "pet-classifier-web-frontend"]
