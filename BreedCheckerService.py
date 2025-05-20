@@ -10,7 +10,7 @@ breed_data = [
         "Cat",
         "Abyssinian",
         "The Abyssinian is a medium-sized cat with a lean, muscular body and a short coat, known for being extremely active and playful.",
-        "https://en.wikipedia.org/wiki/Abyssinian",
+        "https://en.wikipedia.org/wiki/Abyssinian_cat",
     ),
     (
         "Dog",
@@ -106,7 +106,7 @@ breed_data = [
         "Dog",
         "Havanese",
         "Small and sturdy with a silky coat.",
-        "https://en.wikipedia.org/wiki/Havanese",
+        "https://en.wikipedia.org/wiki/Havanese_dog",
     ),
     (
         "Dog",
