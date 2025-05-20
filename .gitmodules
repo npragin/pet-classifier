@@ -1,19 +1,19 @@
 [submodule "pet-classifier-model-service"]
-	path = pet-classifier-model-service
+	path = model-service
 	url = git@github.com:npragin/pet-classifier-model-service.git
 	branch = main
 [submodule "pet-classifier-data-ingestor"]
-	path = pet-classifier-data-ingestor
+	path = data-ingestor
 	url = git@github.com:npragin/pet-classifier-data-ingestor.git
 	branch = main
 [submodule "pet-classifier-web-frontend"]
-	path = pet-classifier-web-frontend
+	path = web-frontend
 	url = git@github.com:npragin/pet-classifier-web-frontend.git
 	branch = main
 [submodule "pet-classifier-results-service"]
-	path = pet-classifier-results-service
+	path = results-service
 	url = git@github.com:npragin/pet-classifier-results-service.git
 	branch = main
 [submodule "pet-classifier-breed-info-service"]
-	path = pet-classifier-breed-info-service
+	path = breed-info-service
 	url = https://github.com/s-sunk/BreedChecker.git
