@@ -4,7 +4,7 @@ import zmq
 import pickle
 import atexit
 
-from config import ZMQ_PORT_MODEL_INGESTOR
+from config import ZMQ_PORT_MODEL
 
 
 def cleanup_zmq(zmq_context, zmq_ingestor_socket):
@@ -21,7 +21,7 @@ def setup_zmq():
     
     # Set up the ingestor socket
     zmq_ingestor_socket = zmq_context.socket(zmq.REP)
-    zmq_ingestor_socket.bind(f"tcp://*:{ZMQ_PORT_MODEL_INGESTOR}")
+    zmq_ingestor_socket.bind(f"tcp://*:{ZMQ_PORT_MODEL}")
     
     # Register the cleanup function with atexit
     atexit.register(cleanup_zmq, zmq_context, zmq_ingestor_socket)
@@ -40,7 +40,7 @@ def main():
     # Set up ZMQ socket
     zmq_ingestor_socket = setup_zmq()
     
-    print(f"Model service listening on port {ZMQ_PORT_MODEL_INGESTOR}. Press Ctrl+C to exit.")
+    print(f"Model service listening on port {ZMQ_PORT_MODEL}. Press Ctrl+C to exit.")
     
     while True:
         try:
