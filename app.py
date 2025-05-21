@@ -5,7 +5,7 @@ import base64
 import atexit
 import pickle
 
-from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_HOSTNAME_INGESTOR, ZMQ_PORT_RESULTS_INGESTOR, ZMQ_HOSTNAME_RESULTS_FRONTEND
+from config import ZMQ_PORT_INGESTOR, ZMQ_HOSTNAME_INGESTOR, ZMQ_PORT_RESULTS, ZMQ_HOSTNAME_RESULTS_FRONTEND
 
 
 # Limit OpenBLAS threads to avoid hitting process limits
@@ -193,10 +193,10 @@ def setup_zmq():
     zmq_context = zmq.Context()
 
     zmq_ingestor_socket = zmq_context.socket(zmq.REQ)
-    zmq_ingestor_socket.connect(f"tcp://{ZMQ_HOSTNAME_INGESTOR}:{ZMQ_PORT_FRONTEND_INGESTOR}")
+    zmq_ingestor_socket.connect(f"tcp://{ZMQ_HOSTNAME_INGESTOR}:{ZMQ_PORT_INGESTOR}")
 
     zmq_results_socket = zmq_context.socket(zmq.REQ)
-    zmq_results_socket.connect(f"tcp://{ZMQ_HOSTNAME_RESULTS_FRONTEND}:{ZMQ_PORT_RESULTS_INGESTOR}")
+    zmq_results_socket.connect(f"tcp://{ZMQ_HOSTNAME_RESULTS_FRONTEND}:{ZMQ_PORT_RESULTS}")
 
     atexit.register(cleanup_zmq, zmq_context, zmq_ingestor_socket, zmq_results_socket)
 
