@@ -1,7 +1,7 @@
 import zmq
 import pickle
 
-from config import ZMQ_PORT_BREED_INFO_FRONTEND
+from config import ZMQ_PORT_BREED_INFO
 
 
 # Breed data
@@ -233,7 +233,7 @@ breed_data = [
 # ZeroMQ server
 context = zmq.Context()
 socket = context.socket(zmq.REP)
-socket.bind(f"tcp://*:{ZMQ_PORT_BREED_INFO_FRONTEND}")
+socket.bind(f"tcp://*:{ZMQ_PORT_BREED_INFO}")
 
 print("Microservice is running...")
 
