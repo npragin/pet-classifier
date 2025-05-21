@@ -6,7 +6,7 @@ from PIL import Image
 import io
 import pickle
 
-from config import ZMQ_PORT_FRONTEND_INGESTOR, ZMQ_PORT_MODEL_INGESTOR, ZMQ_HOSTNAME_MODEL, ZMQ_PORT_RESULTS_INGESTOR, ZMQ_HOSTNAME_RESULTS
+from config import ZMQ_PORT_INGESTOR, ZMQ_PORT_MODEL, ZMQ_HOSTNAME_MODEL, ZMQ_PORT_RESULTS, ZMQ_HOSTNAME_RESULTS
 
 
 def cleanup_zmq(zmq_context, zmq_frontend_socket, zmq_model_socket, zmq_results_socket):
@@ -28,15 +28,15 @@ def setup_zmq():
 
     # Set up the frontend socket
     zmq_frontend_socket = zmq_context.socket(zmq.REP)
-    zmq_frontend_socket.bind(f"tcp://*:{ZMQ_PORT_FRONTEND_INGESTOR}")
+    zmq_frontend_socket.bind(f"tcp://*:{ZMQ_PORT_INGESTOR}")
     
     # Set up the model socket
     zmq_model_socket = zmq_context.socket(zmq.REQ)
-    zmq_model_socket.connect(f"tcp://{ZMQ_HOSTNAME_MODEL}:{ZMQ_PORT_MODEL_INGESTOR}")
+    zmq_model_socket.connect(f"tcp://{ZMQ_HOSTNAME_MODEL}:{ZMQ_PORT_MODEL}")
     
     # Set up the results socket
     zmq_results_socket = zmq_context.socket(zmq.REQ)
-    zmq_results_socket.connect(f"tcp://{ZMQ_HOSTNAME_RESULTS}:{ZMQ_PORT_RESULTS_INGESTOR}")
+    zmq_results_socket.connect(f"tcp://{ZMQ_HOSTNAME_RESULTS}:{ZMQ_PORT_RESULTS}")
 
     # Register the cleanup function with atexit
     atexit.register(cleanup_zmq, zmq_context, zmq_frontend_socket, zmq_model_socket, zmq_results_socket)
