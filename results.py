@@ -6,7 +6,7 @@ import sqlite3
 import datetime
 import os
 
-from config import ZMQ_PORT_RESULTS_INGESTOR
+from config import ZMQ_PORT_RESULTS
 
 
 # Limit OpenBLAS threads to avoid hitting process limits
@@ -34,7 +34,7 @@ def setup_zmq():
 
     # Set up the socket to receive from the data ingestion service
     zmq_ingestor_socket = zmq_context.socket(zmq.REP)
-    zmq_ingestor_socket.bind(f"tcp://*:{ZMQ_PORT_RESULTS_INGESTOR}")
+    zmq_ingestor_socket.bind(f"tcp://*:{ZMQ_PORT_RESULTS}")
 
     # Register the cleanup function with atexit
     atexit.register(cleanup_zmq, zmq_context, zmq_ingestor_socket)
