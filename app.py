@@ -5,7 +5,7 @@ import base64
 import atexit
 import pickle
 
-from config import ZMQ_PORT_INGESTOR, ZMQ_HOSTNAME_INGESTOR, ZMQ_PORT_RESULTS, ZMQ_HOSTNAME_RESULTS_FRONTEND
+from config import ZMQ_PORT_INGESTOR, ZMQ_HOSTNAME_INGESTOR, ZMQ_PORT_RESULTS, ZMQ_HOSTNAME_RESULTS_FRONTEND, ZMQ_HOSTNAME_BREED_INFO_FRONTEND, ZMQ_PORT_BREED_INFO
 
 
 # Limit OpenBLAS threads to avoid hitting process limits
@@ -21,7 +21,7 @@ def create_app():
 
     # Only initialize ZeroMQ in the main process, not in the reloader
     if os.environ.get("WERKZEUG_RUN_MAIN"):
-        zmq_ingestor_socket, zmq_results_socket = setup_zmq()
+        zmq_ingestor_socket, zmq_results_socket, zmq_breed_info_socket = setup_zmq()
 
     @app.route("/")
     def home():
@@ -53,7 +53,6 @@ def create_app():
             
             # Format images as data URLs
             for history in history_items:
-                # The image is already base64 encoded, just need to add the data URL prefix
                 history["image"] = f"data:image/jpeg;base64,{history['image'].decode('utf-8')}"
             
             if request.method == "POST":
@@ -198,18 +197,23 @@ def setup_zmq():
     zmq_results_socket = zmq_context.socket(zmq.REQ)
     zmq_results_socket.connect(f"tcp://{ZMQ_HOSTNAME_RESULTS_FRONTEND}:{ZMQ_PORT_RESULTS}")
 
-    atexit.register(cleanup_zmq, zmq_context, zmq_ingestor_socket, zmq_results_socket)
+    zmq_breed_info_socket = zmq_context.socket(zmq.REQ)
+    zmq_breed_info_socket.connect(f"tcp://{ZMQ_HOSTNAME_BREED_INFO_FRONTEND}:{ZMQ_PORT_BREED_INFO}")
 
-    return zmq_ingestor_socket, zmq_results_socket
+    atexit.register(cleanup_zmq, zmq_context, zmq_ingestor_socket, zmq_results_socket, zmq_breed_info_socket)
+
+    return zmq_ingestor_socket, zmq_results_socket, zmq_breed_info_socket
 
 
-def cleanup_zmq(zmq_context, zmq_ingestor_socket, zmq_results_socket):
+def cleanup_zmq(zmq_context, zmq_ingestor_socket, zmq_results_socket, zmq_breed_info_socket):
     """Clean up ZeroMQ resources"""
     try:
         if zmq_ingestor_socket:
             zmq_ingestor_socket.close()
         if zmq_results_socket:
             zmq_results_socket.close()
+        if zmq_breed_info_socket:
+            zmq_breed_info_socket.close()
         if zmq_context:
             zmq_context.term()
         print("ZeroMQ resources cleaned up successfully")
