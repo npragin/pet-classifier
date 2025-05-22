@@ -78,23 +78,33 @@ def create_app():
     def get_result(uuid):
         try:
             # Send request to results service
-            request_data = {"uuid": uuid}
-            zmq_results_socket.send(pickle.dumps(request_data))
+            results_request_data = {"uuid": uuid}
+            zmq_results_socket.send(pickle.dumps(results_request_data))
             
             # Wait for response
-            response_data = zmq_results_socket.recv()
-            response = pickle.loads(response_data)
+            results_response_data = zmq_results_socket.recv()
+            results_response = pickle.loads(results_response_data)
+
+            # Send request to breed info service
+            breed_info_request_data = {"class": results_response["class"]}
+            zmq_breed_info_socket.send(pickle.dumps(breed_info_request_data))
             
-            if "error" in response:
-                flash(f"Error retrieving result: {response['error']}", "error")
+            # Wait for response
+            breed_info_response_data = zmq_breed_info_socket.recv()
+            breed_info_response = pickle.loads(breed_info_response_data)
+            
+            if "error" in results_response:
+                flash(f"Error retrieving result: {results_response['error']}", "error")
                 return redirect(url_for("home"))
 
             # Render the template with the classification results
             return render_template(
                 "result.html",
-                classification=response["class"],
-                confidence=response["confidence"],
-                image=response["image"].decode('utf-8')  # Decode the base64 image
+                classification=f"{breed_info_response['species']} — {breed_info_response['breed']}",
+                confidence=results_response["confidence"],
+                image=results_response["image"].decode('utf-8'),
+                breed_description=breed_info_response["description"],
+                wikipedia_url=breed_info_response["link"]
             )
             
         except Exception as e:
