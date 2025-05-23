@@ -18,7 +18,7 @@
                     {%- elif confidence >= 0.7 %} confidence-medium
                     {%- else %} confidence-low
                     {%- endif %}">
-                    {{ "%.1f"|format(confidence * 100) }}%
+                    {{ "%.2f"|format(confidence * 100) }}%
                 </span>
             </div>
         </div>
