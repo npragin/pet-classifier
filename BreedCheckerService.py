@@ -267,7 +267,7 @@ while True:
     elif "list" in request:
         print("Received list request")
         response = {
-            "list": [f"{species} - {breed}" for species, breed, _, _ in breed_data]
+            "list": [f"{species} — {breed}" for species, breed, _, _ in breed_data]
         }
         print(f"Response: {response}")
     else:
