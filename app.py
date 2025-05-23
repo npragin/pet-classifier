@@ -39,17 +39,28 @@ def create_app():
                 confidences = []
                 classes = []
 
+            # Send request for breed info
+            breed_info_request_data = {"list": None}
+            zmq_breed_info_socket.send(pickle.dumps(breed_info_request_data))
+            
+            # Wait for response
+            breed_info_response_data = zmq_breed_info_socket.recv()
+            breed_info_response = pickle.loads(breed_info_response_data)
+            
             # Send request for history data
-            request_data = {
+            history_request_data = {
                 "length": 8,
                 "confidences": confidences,
                 "classes": classes
             }
-            zmq_results_socket.send(pickle.dumps(request_data))
+            zmq_results_socket.send(pickle.dumps(history_request_data))
             
             # Wait for response
-            response_data = zmq_results_socket.recv()
-            history_items = pickle.loads(response_data)
+            history_response_data = zmq_results_socket.recv()
+            history_items = pickle.loads(history_response_data)
+
+            for item in history_items:
+                item["class"] = breed_info_response["list"][item["class"]]
             
             # Format images as data URLs
             for history in history_items:
@@ -60,7 +71,7 @@ def create_app():
                 return render_template("history_grid.html", history_items=history_items)
             else:
                 # Return full page for initial load
-                return render_template("history.html", history_items=history_items)
+                return render_template("history.html", history_items=history_items, classes=breed_info_response["list"])
 
         except Exception as e:
             print(f"Error retrieving history: {e}")

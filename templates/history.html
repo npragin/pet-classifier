@@ -50,13 +50,10 @@
             <div class="filter-section classification-filter">
                 <h3>Filter by Classification</h3>
                 <div class="filter-options">
-                    {% for i in range(0, 37) %}
+                    {% for i in range(classes|length) %}
                         <label class="filter-checkbox">
                             <input type="checkbox" name="classification" value="{{ i }}">
-                            <!-- TODO: When it is time to integrate with the breed selection service
-                                     Modify below, not value
-                            -->
-                            {{ i }}
+                            {{ classes[i] }}
                         </label>
                     {% endfor %}
                 </div>
