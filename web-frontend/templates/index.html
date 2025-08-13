@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Pet Breed Classifier - Home{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="upload-area">
+        <h2>Image Upload Area</h2>
+        <p>Drag and drop your image here or click to browse</p>
+        
+        <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="upload-form">
+            <input type="file" name="file" id="file-input" accept="image/*" style="display: none;">
+            <button type="button" id="browse-button" class="btn">Browse Files</button>
+        </form>
+        
+        <div id="preview-container" style="display: none;">
+            <div class="image-preview-wrapper">
+                <img id="image-preview" src="#" alt="Preview">
+            </div>
+            <div class="button-container">
+                <button type="button" id="browse-again-button" class="btn btn-secondary">Browse Files</button>
+                <button id="submit-button" class="btn">Classify Pet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="project-description">
+        <h2>Project Description</h2>
+        <p>Welcome to Pet Breed Classifier, where artificial intelligence meets your furry friends! Our application uses deep learning to identify dog and cat breeds from your uploaded images with impressive accuracy.</p>
+        <br>
+        <p>Simply upload a photo of any cat or dog, and our homemade <a href="https://arxiv.org/abs/2201.03545">ConvNeXt-Tiny</a> model—trained on the comprehensive <a href="https://www.robots.ox.ac.uk/~vgg/data/pets/">Oxford-IIIT Pet Dataset</a>—will analyze the image and tell you not only whether it's a cat or dog, but also identify the specific breed with a confidence score.</p>
+        <br>
+        <p>Whether you're curious about your own pet's heritage, trying to identify a friend's adorable companion, or just want to browse through our gallery of previously classified pets, Pet Breed Classifier offers a fun, educational experience for animal lovers of all kinds.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}

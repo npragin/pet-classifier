@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Pet Breed Classifier - History{% endblock %}
+
+{% block content %}
+<div class="history-container">
+    <div class="history-grid" id="history-grid">
+        {% if history_items %}
+            {% for item in history_items %}
+                <div class="history-card">
+                    <div class="image-container">
+                        <img src="{{ item.image }}" alt="Pet Image" class="history-image">
+                    </div>
+                    <div class="classification-label">
+                        {{ item.class }}
+                        <br>
+                        Confidence: {{ "%.2f"|format(item.confidence * 100) }}%
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="history-empty">
+                <p>No classification history yet. Upload an image on the home page to get started.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="filters-panel">
+        <div class="filters-card">
+            <h2>Filters</h2>
+            
+            <div class="filter-section">
+                <h3>Filter by Confidence</h3>
+                <div class="filter-options">
+                    <label class="filter-checkbox">
+                        <input type="checkbox" name="confidence" value="2">
+                        High (90+%)
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" name="confidence" value="1">
+                        Medium (70-90%)
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" name="confidence" value="0">
+                        Low (<70%)
+                    </label>
+                </div>
+            </div>
+
+            <div class="filter-section classification-filter">
+                <h3>Filter by Classification</h3>
+                <div class="filter-options">
+                    {% for i in range(classes|length) %}
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="classification" value="{{ i }}">
+                            {{ classes[i] }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

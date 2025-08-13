@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <title>{% block title %}Pet Breed Classifier{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="{{ url_for('home') }}">Pet Breed Classifier</a></h1>
+            <nav>
+                <ul class="navigation">
+                    <li><a href="{{ url_for('home') }}" class="{% if request.path == url_for('home') %}active{% endif %}">Home</a></li>
+                    <li><a href="{{ url_for('history') }}" class="{% if request.path == url_for('history') %}active{% endif %}">History</a></li>
+                    <li><a href="{{ url_for('data_profile') }}" class="{% if request.path == url_for('data_profile') %}active{% endif %}">Data Profile/Bias Assessment</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Pet Breed Classifier by Noah Pragin</p>
+        </div>
+    </footer>
+
+    {% block scripts %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% endblock %}
+</body>
+</html>
